@@ -1,0 +1,75 @@
+[project]
+name = "ml-api-deployment"
+version = "0.1.0"
+description = "Machine Learning API deployment project"
+requires-python = ">=3.11"
+
+[tool.ruff]
+# Configuração do Ruff (substitui flake8 + black + isort)
+line-length = 127
+target-version = "py311"
+
+# Selecionar regras de linting
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort (imports)
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "UP",   # pyupgrade
+]
+
+# Ignorar regras específicas
+ignore = [
+    "E501",  # line too long (já controlado por line-length)
+    "B008",  # do not perform function calls in argument defaults
+]
+
+# Excluir diretórios
+exclude = [
+    ".git",
+    ".venv",
+    "venv",
+    "__pycache__",
+    "*.egg-info",
+    "build",
+    "dist",
+]
+
+[tool.ruff.format]
+# Formatação automática (substitui black)
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.mypy]
+# Configuração do MyPy (type checking)
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false  # Começar permissivo
+disallow_any_generics = false
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_optional = true
+strict_optional = true
+
+# Permitir imports sem stubs
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+# Configuração do Pytest
+testpaths = ["api", "chapter13", "chapter14"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--tb=short",
+    "--cov=api",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+]

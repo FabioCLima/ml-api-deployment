@@ -10,45 +10,58 @@ jobs:
   test:
     name: Test & Quality Checks
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.9', '3.10', '3.11']
 
     steps:
+    # PASSO 1: Baixar o código do repositório
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
+    # PASSO 2: Configurar Python 3.11 (versão definida em .python-version)
+    - name: Set up Python 3.11
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
-        cache: 'pip'
+        python-version: '3.11'
 
+    # PASSO 3: Instalar UV (gerenciador de pacotes rápido)
+    - name: Install uv
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    # PASSO 4: Criar ambiente virtual e instalar dependências
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install -r chapter13/complete/requirements.txt
-        pip install pytest pytest-cov flake8 black bandit
+        uv venv
+        source .venv/bin/activate
+        uv pip install -r chapter13/complete/requirements.txt
+        uv pip install pytest pytest-cov mypy ruff
 
-    - name: Run Black (Code Formatting Check)
+    # PASSO 5: Ruff - Verificar formatação (substitui black)
+    - name: Check code formatting with Ruff
       run: |
-        black --check --diff api/ chapter13/ chapter14/ || true
+        source .venv/bin/activate
+        ruff format --check api/ chapter13/ chapter14/
 
-    - name: Run Flake8 (Linting)
+    # PASSO 6: Ruff - Linting (substitui flake8)
+    - name: Run Ruff linting
       run: |
-        flake8 api/ chapter13/ chapter14/ --count --select=E9,F63,F7,F82 --show-source --statistics
-        flake8 api/ chapter13/ chapter14/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        source .venv/bin/activate
+        ruff check api/ chapter13/ chapter14/
 
-    - name: Run Bandit (Security Check)
+    # PASSO 7: MyPy - Type checking (verificação de tipos)
+    - name: Run MyPy type checking
       run: |
-        bandit -r api/ chapter13/ chapter14/ -f json -o bandit-report.json || true
-        bandit -r api/ chapter13/ chapter14/ || true
+        source .venv/bin/activate
+        mypy api/ || true
 
-    - name: Run Tests with Coverage
+    # PASSO 8: Pytest - Rodar testes (OBRIGATÓRIO PASSAR)
+    - name: Run tests with pytest
       run: |
+        source .venv/bin/activate
         pytest api/ --cov=api --cov-report=xml --cov-report=term-missing
 
-    - name: Upload Coverage to Codecov
+    # PASSO 9: Upload de cobertura de código (opcional)
+    - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
       with:
         file: ./coverage.xml
