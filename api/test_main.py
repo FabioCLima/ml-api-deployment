@@ -33,7 +33,6 @@ def test_read_players_with_id():
     assert response.json().get("player_id") == 1001
 
 
-
 # test /v0/performances/
 def test_read_performances():
     response = client.get("/v0/performances/?skip=0&limit=20000")
@@ -43,9 +42,7 @@ def test_read_performances():
 
 # test /v0/performances/ with changed date
 def test_read_performances_by_date():
-    response = client.get(
-        "/v0/performances/?skip=0&limit=20000&minimum_last_changed_date=2024-04-01"
-    )
+    response = client.get("/v0/performances/?skip=0&limit=20000&minimum_last_changed_date=2024-04-01")
     assert response.status_code == 200
     assert len(response.json()) == 2711
 
@@ -61,14 +58,14 @@ def test_read_leagues_with_id():
 def test_read_leagues():
     response = client.get("/v0/leagues/?skip=0&limit=500")
     assert response.status_code == 200
-    assert len(response.json()) == 5 
+    assert len(response.json()) == 5
 
 
 # test /v0/teams/
 def test_read_teams():
     response = client.get("/v0/teams/?skip=0&limit=500")
     assert response.status_code == 200
-    assert len(response.json()) == 52 #v0.2
+    assert len(response.json()) == 52  # v0.2
 
 
 # test /v0/teams/
@@ -77,7 +74,8 @@ def test_read_teams_for_one_league():
     assert response.status_code == 200
     assert len(response.json()) == 12
 
-#v0.2 test added weeks object
+
+# v0.2 test added weeks object
 def test_read_one_team():
     response = client.get("/v0/teams/?skip=0&limit=500&team_name=?skip=0&limit=100&team_name=Wallaby%20Stew")
     assert response.status_code == 200
@@ -95,12 +93,13 @@ def test_counts():
     response_data = response.json()
     assert response.status_code == 200
     assert response_data["league_count"] == 5
-    assert response_data["team_count"] == 52 #v0.2
+    assert response_data["team_count"] == 52  # v0.2
     assert response_data["player_count"] == 1018
-    assert response_data["week_count"] == 18 #v0.2
+    assert response_data["week_count"] == 18  # v0.2
 
-#v0.2
+
+# v0.2
 def test_read_weeks():
     response = client.get("/v0/weeks/?skip=0&limit=1000")
     assert response.status_code == 200
-    assert len(response.json()) == 18 #v0.2
+    assert len(response.json()) == 18  # v0.2

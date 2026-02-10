@@ -9,6 +9,18 @@ requires-python = ">=3.11"
 line-length = 127
 target-version = "py311"
 
+# Excluir diretórios
+exclude = [
+    ".git",
+    ".venv",
+    "venv",
+    "__pycache__",
+    "*.egg-info",
+    "build",
+    "dist",
+]
+
+[tool.ruff.lint]
 # Selecionar regras de linting
 select = [
     "E",    # pycodestyle errors
@@ -24,17 +36,7 @@ select = [
 ignore = [
     "E501",  # line too long (já controlado por line-length)
     "B008",  # do not perform function calls in argument defaults
-]
-
-# Excluir diretórios
-exclude = [
-    ".git",
-    ".venv",
-    "venv",
-    "__pycache__",
-    "*.egg-info",
-    "build",
-    "dist",
+    "B904",  # raise ... from err (pode ignorar por enquanto)
 ]
 
 [tool.ruff.format]

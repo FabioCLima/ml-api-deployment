@@ -1,0 +1,60 @@
+# Configuração do Pre-Commit Hooks
+# Documentação: https://pre-commit.com
+
+repos:
+  # 1. Hooks básicos de qualidade
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace       # Remove espaços em branco no final
+      - id: end-of-file-fixer         # Garante nova linha no final do arquivo
+      - id: check-yaml                # Valida arquivos YAML
+      - id: check-added-large-files   # Bloqueia arquivos grandes (>500KB)
+      - id: check-json                # Valida arquivos JSON
+      - id: check-merge-conflict      # Detecta marcadores de merge conflict
+      - id: debug-statements          # Detecta print() e breakpoint()
+
+  # 2. Ruff - Linting e Formatação (substitui black + flake8 + isort)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.3.0
+    hooks:
+      # Ruff Linter - Encontra problemas no código
+      - id: ruff
+        args: [--fix]  # Corrige automaticamente quando possível
+        types_or: [python, pyi]
+
+      # Ruff Formatter - Formata o código (substitui black)
+      - id: ruff-format
+        types_or: [python, pyi]
+
+  # 3. MyPy - Type Checking (desativado por padrão - use o CI)
+  # Descomente para ativar localmente
+  # - repo: https://github.com/pre-commit/mirrors-mypy
+  #   rev: v1.8.0
+  #   hooks:
+  #     - id: mypy
+  #       args: [--ignore-missing-imports, --no-strict-optional]
+  #       # Não instalar types-all - apenas tipos necessários
+  #       # additional_dependencies: []
+
+  # 4. Pytest - Rodar testes rápidos (opcional)
+  # Descomentado = vai rodar testes antes de cada commit (pode ser lento!)
+  # - repo: local
+  #   hooks:
+  #     - id: pytest
+  #       name: pytest
+  #       entry: pytest
+  #       language: system
+  #       pass_filenames: false
+  #       args: [api/, -v, --tb=short]
+  #       stages: [commit]
+
+# Configuração global
+default_language_version:
+  python: python3  # Usa a versão default do sistema
+
+# Executar em quais estágios?
+# - commit: Antes de cada commit
+# - push: Antes de cada push
+# - manual: Só quando rodar manualmente
+default_stages: [pre-commit]

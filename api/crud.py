@@ -1,14 +1,23 @@
 """SQLAlchemy Query Functions"""
-from sqlalchemy.orm import Session
-from sqlalchemy.orm import joinedload
+
 from datetime import date
 
 import models
+from sqlalchemy.orm import Session, joinedload
+
 
 def get_player(db: Session, player_id: int):
     return db.query(models.Player).filter(models.Player.player_id == player_id).first()
 
-def get_players(db: Session, skip: int = 0, limit: int = 100, min_last_changed_date: date = None, last_name : str = None, first_name : str = None, ):
+
+def get_players(
+    db: Session,
+    skip: int = 0,
+    limit: int = 100,
+    min_last_changed_date: date = None,
+    last_name: str = None,
+    first_name: str = None,
+):
     query = db.query(models.Player)
     if min_last_changed_date:
         query = query.filter(models.Player.last_changed_date >= min_last_changed_date)
@@ -25,48 +34,61 @@ def get_performances(db: Session, skip: int = 0, limit: int = 100, min_last_chan
         query = query.filter(models.Performance.last_changed_date >= min_last_changed_date)
     return query.offset(skip).limit(limit).all()
 
+
 def get_league(db: Session, league_id: int = None):
     return db.query(models.League).filter(models.League.league_id == league_id).first()
 
-def get_leagues(db: Session, skip: int = 0, limit: int = 100, min_last_changed_date: date = None,league_name: str = None):
-    query = db.query(models.League
-                    ).options(joinedload(models.League.teams))
+
+def get_leagues(db: Session, skip: int = 0, limit: int = 100, min_last_changed_date: date = None, league_name: str = None):
+    query = db.query(models.League).options(joinedload(models.League.teams))
     if min_last_changed_date:
-        query = query.filter(models.League.last_changed_date >= min_last_changed_date)                              
-    if league_name: 
-        query = query.filter(models.League.league_name == league_name)     
+        query = query.filter(models.League.last_changed_date >= min_last_changed_date)
+    if league_name:
+        query = query.filter(models.League.league_name == league_name)
     return query.offset(skip).limit(limit).all()
 
 
-def get_teams(db: Session, skip: int = 0, limit: int = 100, min_last_changed_date: date = None, team_name: str = None, league_id: int = None):
-    query = db.query(models.Team)#.options(joinedload(models.Team.weekly_team_scores))
+def get_teams(
+    db: Session,
+    skip: int = 0,
+    limit: int = 100,
+    min_last_changed_date: date = None,
+    team_name: str = None,
+    league_id: int = None,
+):
+    query = db.query(models.Team)  # .options(joinedload(models.Team.weekly_team_scores))
     if min_last_changed_date:
         query = query.filter(models.Team.last_changed_date >= min_last_changed_date)
-    if team_name: 
+    if team_name:
         query = query.filter(models.Team.team_name == team_name)
-    if league_id: 
+    if league_id:
         query = query.filter(models.Team.league_id == league_id)
-    return query.offset(skip).limit(limit).all()    
+    return query.offset(skip).limit(limit).all()
 
-#added for v0.2
+
+# added for v0.2
 def get_weeks(db: Session, skip: int = 0, limit: int = 5000, min_last_changed_date: date = None):
     query = db.query(models.Week)
     if min_last_changed_date:
         query = query.filter(models.Week.last_changed_date >= min_last_changed_date)
     return query.offset(skip).limit(limit).all()
 
-#analytics queries
+
+# analytics queries
 def get_player_count(db: Session):
     query = db.query(models.Player)
     return query.count()
+
 
 def get_team_count(db: Session):
     query = db.query(models.Team)
     return query.count()
 
+
 def get_league_count(db: Session):
     query = db.query(models.League)
     return query.count()
+
 
 def get_week_count(db: Session):
     query = db.query(models.Week)
